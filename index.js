@@ -1,4 +1,5 @@
 import express from 'express'
+import bodyParser from 'body-parser'
 import { router as adminRouter } from "./admin.js"
 import { router as baseRouter } from "./base.js"
 
@@ -11,6 +12,7 @@ const routers = {
 }
 
 
+app.use(bodyParser.json())
 app.use("/admin" + baseURL, routers.adminRouter)
 app.use(baseURL, routers.baseRouter)
 app.listen(routers.port)
