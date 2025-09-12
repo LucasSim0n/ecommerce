@@ -1,6 +1,7 @@
 import express from 'express'
 import bodyParser from 'body-parser'
-import { connection as db, queries as qs } from './database.js'
+import { connection as db } from '../db'
+import { queries as qs } from '../src/queries/adminProdQueryTemplates'
 
 export const router = express.Router()
 router.use(bodyParser.json())
@@ -21,7 +22,7 @@ router.route("/products/:id")
 
 async function getAllProducts(res) {
   try {
-    const [result] = await db.query(qs.GET_ALL_PRODUCTS)
+    const [result] = await db.query(qs.getAllProducts)
     res.send(result)
   } catch (err) {
     console.log(err)
@@ -30,9 +31,8 @@ async function getAllProducts(res) {
 }
 
 async function resetDB(res) {
-  const query = qs.RESET_PRODUCTS_DB
   try {
-    await db.query(query)
+    await db.query(qs.resetProductsDb)
     res.status(204).json({ ok: "Database reseted" })
   } catch (err) {
     res.status(500).json({ error: err.message })
@@ -40,13 +40,15 @@ async function resetDB(res) {
 }
 
 async function insertProduct(req, res) {
+  //NOTE: Validación de body
   if (!req.body || !req.body.name) {
     res.sendStatus(400)
     return
   }
 
+  //NOTE: Validación de nombre
   try {
-    const exists = await db.query(qs.PRODUCT_NAME_EXISTS(req.body.name))
+    const exists = await db.query(qs.productNameExists(req.body.name))
     if (exists) {
       res.sendStatus(400).json({ error: "Product already exists." })
       return
@@ -56,20 +58,20 @@ async function insertProduct(req, res) {
     return
   }
 
+  //NOTE: Generación de datos propios del modelo
   const date = new Date().toISOString().slice(0, 19).replace('T', ' ');
   const stock = req.body.stock ? req.body.stock : 0
-  const query = qs.INSERT_PRODUCT(req.body.name, date, stock)
 
   let id = 0
   try {
-    [id] = await db.query(query)
+    [id] = await db.query(qs.insertProduct(req.body.name, date, stock))
   } catch (err) {
     res.sendStatus(500).json({ error: err.message })
     return
   }
 
   try {
-    const [result] = await db.query(qs.GET_PRODUCT_BY_ID(id))
+    const [result] = await db.query(qs.getProductById(id))
     res.send(result)
   } catch (err) {
     res.sendStatus(500).json({ error: err.message })
@@ -88,7 +90,7 @@ async function updateProductByID(req, res) {
   }
 
   try {
-    const found = await db.query(qs.PRODUCT_ID_EXISTS(id))
+    const found = await db.query(qs.productIdExists(id))
     if (!found) {
       res.sendStatus(404)
       return
@@ -102,14 +104,14 @@ async function updateProductByID(req, res) {
 
   let sameName = false
   try {
-    sameName = await db.query(qs.PRODUCT_NAME_EXISTS(req.body.name))
+    sameName = await db.query(qs.productNameExists(req.body.name))
   } catch (err) {
     res.status(500)
     res.send({ error: err.message })
     return
   }
 
-  const query = sameName ? qs.UPDATE_PRODUCT_STOCK(id, date, req.body.stock) : qs.UPDATE_PRODUCT_NAME_STOCK(id, req.body.name, date, req.body.stock)
+  const query = sameName ? qs.updateProductStock(id, date, req.body.stock) : qs.updateProductNameStock(id, req.body.name, date, req.body.stock)
 
   try {
     await db.query(query)
@@ -120,7 +122,7 @@ async function updateProductByID(req, res) {
   }
 
   try {
-    const [result] = await db.query(qs.GET_PRODUCT_BY_ID(id))
+    const [result] = await db.query(qs.getProductById(id))
     res.send(result)
   } catch (err) {
     res.status(500).json({ error: err.message })
@@ -135,7 +137,7 @@ async function deleteProductByID(req, res) {
   }
 
   try {
-    const found = await db.query(qs.PRODUCT_ID_EXISTS(id))
+    const found = await db.query(qs.productIdExists(id))
     if (!found) {
       res.sendStatus(404)
       return
@@ -146,7 +148,7 @@ async function deleteProductByID(req, res) {
   }
 
   try {
-    await db.query(qs.DELETE_PRODUCT(id))
+    await db.query(qs.deleteProduct(id))
     res.sendStatus(204)
   } catch (err) {
     res.status(500)
@@ -160,7 +162,7 @@ async function getProductByID(req, res) {
   if (isNaN(id)) res.sendStatus(400)
 
   try {
-    const found = await db.query(qs.PRODUCT_ID_EXISTS(id))
+    const found = await db.query(qs.productIdExists(id))
     if (!found) {
       res.sendStatus(404)
       return
@@ -171,7 +173,7 @@ async function getProductByID(req, res) {
   }
 
   try {
-    const [result] = await db.query(qs.GET_PRODUCT_BY_ID(id))
+    const [result] = await db.query(qs.getProductById(id))
     res.send(result)
   } catch (err) {
     res.status(500).json({ error: err.message })

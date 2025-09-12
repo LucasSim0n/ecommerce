@@ -17,3 +17,8 @@ swagger (como integrar en express, si vale la pena)
 -- Pool de conexiones a la db creado
 -- Imports ES6 -> promises
 -- .env + integración con módulo dotenv
+
+--- 10-9-25
+Modelos y validación: express-validator, joi, zod -> Probablemente Joi: Fácil sanitización + validación
+Autenticación vía jwt/refresh tokens
+IMPORTANTE: Rehacer las queries con mysql2 'prepared statements' -> Sanitización de queries
