@@ -1,24 +1,18 @@
-Queremos:
 
-- Añadir un error handler general (https://expressjs.com/en/guide/error-handling.html) que siga siendo REST (json).
-un error es un json que contiene un "message" y un "status".
-Para nota: Hay algún handler de express que sirve para dev, dando errores de programación, etc. Si estamos en NODE_ENV="development" usar estas facilidades.
---Investigar https://github.com/arb/celebrate
-
+REFERENCIAS:
 - https://github.com/jstibenpb/nodejs-express-template/blob/template/app.js
-
-upsert de un producto.
-
 
 --- 9-9-25
 restfull api convenciones
 swagger (como integrar en express, si vale la pena)
 
--- Pool de conexiones a la db creado
--- Imports ES6 -> promises
--- .env + integración con módulo dotenv
-
 --- 10-9-25
-Modelos y validación: express-validator, joi, zod -> Probablemente Joi: Fácil sanitización + validación
 Autenticación vía jwt/refresh tokens
-IMPORTANTE: Rehacer las queries con mysql2 'prepared statements' -> Sanitización de queries
+
+-- Morgan, cors -> Investigar (middlewares)
+
+-- CSRF -> Investigar qué es y como se usa(si se usa) en rest apis
+
+-- Crear appException para agrupar los errores contemplados:
+Añadir un error handler general (https://expressjs.com/en/guide/error-handling.html) que siga siendo REST (json).
+un error es un json que contiene un "message" y un "status".
