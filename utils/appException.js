@@ -2,7 +2,7 @@ export const appException = {
   internalServerError: {
     error: true,
     status: 500,
-    message: "Internal server error"
+    message: "Internal Server Error"
   },
   notFound: {
     error: true,
@@ -13,7 +13,7 @@ export const appException = {
     return {
       error: true,
       status: 400,
-      message: "Bad request: " + message
+      message: "Bad Request: " + message
     }
-  }
+  },
 }

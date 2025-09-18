@@ -1,6 +1,6 @@
 import Joi from "joi";
 
-export const user = Joi.object({
+export const userModel = Joi.object({
   id: Joi.number()
     .required(),
 
@@ -28,7 +28,7 @@ export const user = Joi.object({
   .xor("password", "jwt")
   .with("jwt", "refresh_token")
 
-export const createUser = Joi.object({
+export const createUserModel = Joi.object({
   fname: Joi.string()
     .required(),
 
