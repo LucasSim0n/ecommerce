@@ -1,19 +1,23 @@
-export const appException = {
-  internalServerError: {
-    error: true,
-    status: 500,
-    message: "Internal Server Error"
-  },
-  notFound: {
-    error: true,
-    status: 404,
-    message: "Not Found"
-  },
-  badRequest: (message) => {
+export class AppError extends Error {
+  constructor(message, status) {
+    super(message)
+    this.status = status
+    this.name = this.constructor.name
+  }
+  toJson() {
     return {
-      error: true,
-      status: 400,
-      message: "Bad Request: " + message
+      status: this.status,
+      message: this.message
     }
-  },
+  }
+}
+
+export const appException = {
+  internalServerError: () => new AppError("Internal Server Error", 500),
+  notFound: () => new AppError("Not Found", 404),
+  productNameExists: () => new AppError("Product Name Already Exists", 400),
+  noChangesMade: () => new AppError("No Changes Made", 400),
+  invalidUpdate: () => new AppError("Invalid Update", 400),
+  invalidInsert: () => new AppError("Invalid Insert", 400),
+  accountExists: () => new AppError("Account with given email already exists", 400)
 }

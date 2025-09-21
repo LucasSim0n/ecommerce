@@ -1,4 +1,4 @@
-import { userQueries as uqs } from "./userQueries";
+import * as uqs from "./userQueries";
 import { userModel, createUserModel } from "./user.model";
 
 export async function resetUsersDB() {

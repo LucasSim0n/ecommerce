@@ -1,33 +1,137 @@
 import { connection as db } from "../connection.js"
-export const productQueries = {
-  insertProduct: async (name, created_at, updated_at, stock) => {
-    return await db.execute(
-      "INSERT INTO `products`(`name`, `created_at`, `updated_at`, `stock`) VALUES(?, ?, ?, ?);",
-      [name, created_at, updated_at, stock]
-    )
-  },
+import { templates as tm } from "./productQueryTemplates.js"
+import { appException } from "../../utils/appException.js"
 
-  updateProductName: async (name, updatedAt, id) => {
-    return await db.execute(
-      "UPDATE `products` SET `name` = ?, `updated_at` = ? WHERE `id` = ?;",
-      [name, updatedAt, id]
-    )
-  },
+export async function deleteProduct(id) {
+  try {
+    await db.execute(tm.deleteProduct, [id])
+  } catch (err) {
+    throw err
+  }
+}
 
-  updateProductStock: async (stock, updatedAt, id) => {
-    return await db.execute(
-      "UPDATE `products` SET `stock` = ?, `updated_at` = ? WHERE `id` = ?;",
-      [stock, updatedAt, id]
-    )
-  },
+export async function getProductById(id) {
+  try {
+    const [result] = await db.execute(tm.getProductById, [id])
+    return result
+  } catch (err) {
+    throw err
+  }
+}
 
-  deleteProduct: async (id) => { await db.execute("DELETE FROM `products` WHERE `id` = ?;", [id]) },
+export async function getProductByName(name) {
+  try {
+    const [result] = await db.execute(tm.getProductByName, [name])
+    return result
+  } catch (err) {
+    throw err
+  }
+}
 
-  getProductById: async (id) => { return await db.execute("SELECT * FROM `products` WHERE `id` = ?;", [id]) },
+export async function resetProductsDb() {
+  try {
+    await db.execute(tm.resetProductsDb, [])
+  } catch (err) {
+    throw err
+  }
+}
 
-  getProductByName: async (name) => { return await db.execute("SELECT * FROM `products` WHERE `name` = ?;", [name]) },
+export async function getAllProducts() {
+  try {
+    const [resultRows] = await db.execute(tm.getAllProducts)
+    return resultRows
+  } catch (err) {
+    throw err
+  }
+}
 
-  resetProductsDb: async () => { await db.execute("DELETE FROM `products`;") },
+export async function insertProduct(name, created_at, updated_at, stock) {
+  let con
+  try {
+    con = await db.getConnection()
+    await con.beginTransaction()
 
-  getAllProducts: async () => { await db.execute("SELECT * FROM `products`;") },
+    const [exists] = await con.execute(tm.getProductByName, [name])
+    if (exists[0]) {
+      throw appException.productNameExists()
+    }
+
+    const [result] = await con.execute(tm.insertProduct, [name, created_at, updated_at, stock])
+
+    const [productRows] = await con.execute(tm.getProductById, [result.insertId])
+    const product = productRows[0]
+
+    await con.commit()
+
+    return product
+
+  } catch (err) {
+    if (con) {
+      await con.rollback()
+    }
+    throw err
+
+  } finally {
+    if (con) {
+      con.release()
+    }
+  }
+}
+
+export async function updateProduct(name, stock, updatedAt, id) {
+  let con
+  try {
+    con = await db.getConnection()
+    await con.beginTransaction()
+
+    const [originalRows] = await con.execute(tm.getProductById, [id])
+    const original = originalRows[0]
+
+    if (!original) {
+      throw appException.notFound()
+    }
+
+    const valid = validateProductUpdate({ id, name, stock }, original)
+    if (!valid) {
+      throw appException.noChangesMade()
+    }
+
+    if (original.name !== name) {
+      await con.execute(tm.updateProductName, [name, updatedAt, id])
+    }
+
+    await con.execute(tm.updateProduct, [stock, updatedAt, id])
+
+    const [resultRows] = await con.execute(tm.getProductById, [id])
+    const result = resultRows[0]
+
+    await con.commit()
+    return result
+
+  } catch (err) {
+    if (con) {
+      try {
+        await con.rollback()
+      } catch (err) {
+        throw err
+      }
+    }
+    throw err
+
+  } finally {
+    if (con) {
+      con.release()
+    }
+  }
+}
+
+function validateProductUpdate(product, originalProduct) {
+  let hasDif = false
+  for (let prop in product) {
+    if (product[prop] !== originalProduct[prop]) {
+      hasDif = true
+      break
+    }
+  }
+  return hasDif
 }

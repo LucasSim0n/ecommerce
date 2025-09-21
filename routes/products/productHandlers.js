@@ -1,5 +1,6 @@
 import * as pm from "../../db/products/productMethods.js"
 import { appException } from "../../utils/appException.js"
+import { deleteSuccess } from "../../utils/genericSuccess.js"
 
 
 export async function getAllProductsHander(res) {
@@ -9,29 +10,25 @@ export async function getAllProductsHander(res) {
 
 export async function resetDBHandler(res) {
   await pm.resetProductsDB()
-  res.status(204).json({ ok: "Database reseted" })
+  res.status(204).json(deleteSuccess)
 }
 
 export async function insertProductHandler(req, res) {
   if (!req.body) {
-    res.status(400)
-    res.send(appException.badRequest("body required"))
-    return
+    throw appException.invalidInsert()
   }
 
-  const [result] = await pm.createProduct(req.body)
+  const result = await pm.insertProduct(req.body)
   res.send(result)
 }
 
 export async function updateProductHanlder(req, res) {
   const { id } = req.params
   if (!req.body) {
-    res.status(400)
-    res.send(appException.badRequest("body required"))
-    return
+    throw appException.invalidUpdate()
   }
 
-  const [result] = await pm.updateProduct(id, req.body)
+  const result = await pm.updateProduct(id, req.body)
   res.status(204)
   res.send(result)
 }
@@ -40,8 +37,7 @@ export async function deleteProductHandler(req, res) {
   const { id } = req.params
 
   await pm.deleteProduct(id)
-  res.status(204)
-  res.send({ ok: "OK" })
+  res.status(204).json(deleteSuccess)
 }
 
 
