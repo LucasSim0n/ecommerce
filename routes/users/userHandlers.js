@@ -34,7 +34,6 @@ export async function updateUserHandler(req, res) {
   const { id } = req.params
 
   const result = await um.updateUser(id, req.body)
-  console.log(result)
   res.send(result)
 }
 

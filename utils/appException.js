@@ -23,4 +23,5 @@ export const appException = {
   invalidLogin: () => new AppError("Invalid Login", 400),
   noJWTProvided: () => new AppError("No JWT Provided", 401),
   invalidJWT: () => new AppError("Invalid JWT", 403),
+  noAdmin: () => new AppError("No Admin", 401),
 }

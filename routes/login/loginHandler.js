@@ -11,7 +11,7 @@ export async function loginHandler(req, res) {
   const valid = await compare(req.body.password, user.password)
   if (!valid) throw appException.invalidLogin()
 
-  user.token = makeJWT(user.email)
+  user.token = makeJWT(user.id)
 
   res.send(user)
 }

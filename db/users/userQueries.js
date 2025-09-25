@@ -58,7 +58,7 @@ export async function getUserByEmail(email) {
     if (!resultRows[0]) {
       throw appException.notFound()
     }
-    delete resultRows[0].password
+    // delete resultRows[0].password
     return resultRows[0]
   } catch (err) {
     throw err
