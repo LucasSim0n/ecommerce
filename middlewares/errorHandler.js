@@ -1,6 +1,7 @@
-import { AppError, appException } from "../utils/appException.js"
+import { AppError, appException } from '../utils/appException.js'
 
 export function errorHandler(err, req, res, next) {
+  console.log(err)
   if (err instanceof AppError) {
     res.status(err.status).json(err.toJson())
     return

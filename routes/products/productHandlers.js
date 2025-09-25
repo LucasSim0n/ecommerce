@@ -1,6 +1,6 @@
-import * as pm from "../../db/products/productMethods.js"
-import { appException } from "../../utils/appException.js"
-import { deleteSuccess } from "../../utils/genericSuccess.js"
+import * as pm from '../../db/products/productMethods.js'
+import { appException } from '../../utils/appException.js'
+import { deleteSuccess } from '../../utils/genericSuccess.js'
 
 
 export async function getAllProductsHander(res) {
@@ -10,7 +10,7 @@ export async function getAllProductsHander(res) {
 
 export async function resetDBHandler(res) {
   await pm.resetProductsDB()
-  res.status(204).json(deleteSuccess)
+  res.send(deleteSuccess)
 }
 
 export async function insertProductHandler(req, res) {
@@ -19,7 +19,7 @@ export async function insertProductHandler(req, res) {
   }
 
   const result = await pm.insertProduct(req.body)
-  res.send(result)
+  res.status(201).json(result)
 }
 
 export async function updateProductHanlder(req, res) {
@@ -29,7 +29,6 @@ export async function updateProductHanlder(req, res) {
   }
 
   const result = await pm.updateProduct(id, req.body)
-  res.status(204)
   res.send(result)
 }
 
@@ -37,7 +36,7 @@ export async function deleteProductHandler(req, res) {
   const { id } = req.params
 
   await pm.deleteProduct(id)
-  res.status(204).json(deleteSuccess)
+  res.send(deleteSuccess)
 }
 
 

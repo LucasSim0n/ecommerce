@@ -19,5 +19,8 @@ export const appException = {
   noChangesMade: () => new AppError("No Changes Made", 400),
   invalidUpdate: () => new AppError("Invalid Update", 400),
   invalidInsert: () => new AppError("Invalid Insert", 400),
-  accountExists: () => new AppError("Account with given email already exists", 400)
+  accountExists: () => new AppError("Account with given email already exists", 400),
+  invalidLogin: () => new AppError("Invalid Login", 400),
+  noJWTProvided: () => new AppError("No JWT Provided", 401),
+  invalidJWT: () => new AppError("Invalid JWT", 403),
 }

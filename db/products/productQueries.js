@@ -1,6 +1,6 @@
-import { connection as db } from "../connection.js"
-import { templates as tm } from "./productQueryTemplates.js"
-import { appException } from "../../utils/appException.js"
+import { connection as db } from '../connection.js'
+import { templates as tm } from './productQueryTemplates.js'
+import { appException } from '../../utils/appException.js'
 
 export async function deleteProduct(id) {
   try {

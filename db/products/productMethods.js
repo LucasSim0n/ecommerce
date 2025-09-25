@@ -1,6 +1,6 @@
-import * as pqs from "./productQueries.js"
-import { productModel, createProductModel } from "./product.model.js";
-import { appException } from "../../utils/appException.js";
+import * as pqs from './productQueries.js'
+import { productModel, createProductModel } from './product.model.js';
+import { appException } from '../../utils/appException.js';
 
 export async function getAllProducts() {
   try {

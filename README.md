@@ -16,7 +16,6 @@ A work-in-progress RESTful API built with **Express.js** for a digital commerce 
 - [Folder Structure](#folder-structure)  
 - [Usage](#usage)  
 - [Contributing](#contributing)  
-- [License](#license)  
 
 ---
 

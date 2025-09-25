@@ -1,9 +1,6 @@
-import Joi from "joi";
+import Joi from 'joi';
 
 export const userModel = Joi.object({
-  id: Joi.number()
-    .required(),
-
   email: Joi.string()
     .email()
     .required(),
@@ -18,15 +15,8 @@ export const userModel = Joi.object({
     .required(),
 
   password: Joi.string()
-    .pattern(new RegExp('[a-zA-Z0-9]')),
-
-  jwt: Joi.string(),
-
-  refresh_token: Joi.string()
+    .required(),
 })
-
-  .xor("password", "jwt")
-  .with("jwt", "refresh_token")
 
 export const createUserModel = Joi.object({
   fname: Joi.string()
@@ -41,8 +31,5 @@ export const createUserModel = Joi.object({
 
   password: Joi.string()
     .pattern(new RegExp('[a-zA-Z0-9]'))
-    .required(),
-
-  repeat_password: Joi.ref('password')
     .required(),
 })
